@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercury — Фурузонфар Зикриёев</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&family=Syne:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #020408;
+    --deep: #060b14;
+    --navy: #0a1628;
+    --accent: #4fc3f7;
+    --accent2: #7c4dff;
+    --gold: #ffd54f;
+    --glow: rgba(79,195,247,0.15);
+    --text: #e8edf5;
+    --muted: #6b7fa3;
+    --card: rgba(10,22,40,0.8);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: screen;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(79,195,247,0.4);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+  }
+
+  /* CANVAS STARS */
+  #starfield { position: fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 60px;
+    background: linear-gradient(to bottom, rgba(2,4,8,0.9), transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px var(--accent);
+  }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    font-weight: 600;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section { position: relative; z-index: 1; }
+
+  /* HERO */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 100px 40px 60px;
+  }
+  .hero-inner { max-width: 900px; }
+
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    border: 1px solid rgba(79,195,247,0.3);
+    padding: 6px 20px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero-name {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(42px, 8vw, 96px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero-name .line1 { display: block; color: var(--text); font-family: 'Russo One', 'Orbitron', sans-serif; letter-spacing: 4px; }
+  .hero-name .mercury {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(79,195,247,0.5));
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 1px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-sub span { color: var(--accent); font-weight: 600; }
+
+  .hero-btns {
+    margin-top: 50px;
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  .btn {
+    padding: 14px 36px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--black);
+    box-shadow: 0 0 30px rgba(79,195,247,0.4);
+  }
+  .btn-primary:hover { box-shadow: 0 0 50px rgba(79,195,247,0.7); transform: translateY(-2px); }
+  .btn-outline {
+    border: 1px solid rgba(79,195,247,0.4);
+    color: var(--accent);
+    background: transparent;
+  }
+  .btn-outline:hover { border-color: var(--accent); background: rgba(79,195,247,0.08); transform: translateY(-2px); }
+
+  .hero-stats {
+    margin-top: 80px;
+    display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+  /* ORBIT DECORATION */
+  .orbit-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .orbit {
+    position: absolute;
+    border: 1px solid rgba(79,195,247,0.06);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .orbit-1 { width: 500px; height: 500px; animation: spin 30s linear infinite; }
+  .orbit-2 { width: 750px; height: 750px; animation: spin 50s linear infinite reverse; }
+  .orbit-3 { width: 1000px; height: 1000px; animation: spin 80s linear infinite; }
+  .planet {
+    position: absolute;
+    border-radius: 50%;
+    top: 0; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .planet-1 { width: 8px; height: 8px; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .planet-2 { width: 5px; height: 5px; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+  .planet-3 { width: 6px; height: 6px; background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+
+  /* SECTION STYLES */
+  .section-header {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .section-line {
+    width: 60px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    margin: 20px auto 0;
+    border-radius: 2px;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+  /* ABOUT */
+  #about { padding: 120px 0; }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-photo-wrap {
+    position: relative;
+    display: flex; justify-content: center;
+  }
+  .about-photo {
+    width: 300px; height: 380px;
+    border-radius: 8px;
+    background: var(--navy);
+    border: 1px solid rgba(79,195,247,0.2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+  .about-photo img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+  .about-photo::before {
+    content: '';
+    position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), transparent);
+    z-index: -1;
+    border-radius: 9px;
+    opacity: 0.5;
+  }
+  .photo-glow {
+    position: absolute;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(79,195,247,0.15), transparent);
+    bottom: -40px; right: -40px;
+    border-radius: 50%;
+  }
+  .about-text h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .about-text p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .about-text p strong { color: var(--text); }
+  .about-tags {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 28px;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 5px 14px;
+    border: 1px solid rgba(79,195,247,0.25);
+    border-radius: 20px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  /* SKILLS */
+  #skills { padding: 120px 0; background: linear-gradient(to bottom, transparent, rgba(6,11,20,0.5), transparent); }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .skill-card {
+    background: var(--card);
+    border: 1px solid rgba(79,195,247,0.1);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .skill-card:hover::before { transform: scaleX(1); }
+  .skill-card:hover { border-color: rgba(79,195,247,0.3); transform: translateY(-4px); }
+  .skill-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  .skill-card h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  .skill-list { list-style: none; }
+  .skill-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .skill-list li:last-child { border-bottom: none; }
+  .skill-level {
+    display: flex; gap: 3px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(79,195,247,0.2);
+  }
+  .dot.filled { background: var(--accent); }
+
+  /* PROJECTS */
+  #projects { padding: 120px 0; }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .project-card {
+    background: var(--card);
+    border: 1px solid rgba(79,195,247,0.1);
+    border-radius: 12px;
+    padding: 36px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card.featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, rgba(10,22,40,0.9), rgba(15,30,55,0.9));
+    border-color: rgba(79,195,247,0.25);
+  }
+  .project-card:hover { transform: translateY(-4px); border-color: rgba(79,195,247,0.3); }
+  .project-card:hover .project-glow { opacity: 1; }
+  .project-glow {
+    position: absolute;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(79,195,247,0.08), transparent);
+    top: -50px; right: -50px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .project-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    color: rgba(79,195,247,0.4);
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+  }
+  .project-card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .project-card.featured h3 { font-size: 28px; }
+  .project-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .project-tech {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tech-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    background: rgba(79,195,247,0.08);
+    border: 1px solid rgba(79,195,247,0.2);
+    border-radius: 4px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .project-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 14px;
+    background: linear-gradient(135deg, rgba(79,195,247,0.15), rgba(124,77,255,0.15));
+    border: 1px solid rgba(79,195,247,0.3);
+    border-radius: 20px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* ACHIEVEMENTS */
+  #achievements { padding: 120px 0; }
+  .achievements-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .ach-item {
+    background: var(--card);
+    border: 1px solid rgba(79,195,247,0.1);
+    border-radius: 12px;
+    padding: 28px 32px;
+    display: flex; gap: 20px; align-items: flex-start;
+    transition: all 0.3s;
+  }
+  .ach-item:hover { border-color: rgba(79,195,247,0.3); transform: translateX(4px); }
+  .ach-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .ach-content h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .ach-content p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* EXPERIENCE */
+  #experience { padding: 120px 0; }
+  .exp-timeline { position: relative; padding-left: 30px; }
+  .exp-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+  }
+  .exp-item {
+    position: relative;
+    padding: 0 0 50px 40px;
+  }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: -5px; top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 15px var(--accent);
+  }
+  .exp-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .exp-item h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .exp-company {
+    font-size: 14px;
+    color: var(--accent2);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .exp-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* CONTACT */
+  #contact { padding: 120px 0; text-align: center; }
+  .contact-inner { max-width: 700px; margin: 0 auto; }
+  .contact-inner p {
+    font-size: 18px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 50px;
+  }
+  .contact-links {
+    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
+  }
+  .contact-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 28px;
+    border: 1px solid rgba(79,195,247,0.2);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+    background: var(--card);
+    cursor: none;
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(79,195,247,0.15);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px;
+    text-align: center;
+    border-top: 1px solid rgba(79,195,247,0.08);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(79,195,247,0.3); }
+    50% { box-shadow: 0 0 40px rgba(79,195,247,0.6); }
+  }
+
+  /* BURGER MENU */
+  .burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 200;
+  }
+  .burger span {
+    display: block;
+    width: 24px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .burger.open span:nth-child(2) { opacity: 0; }
+  .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 768px) {
+    .burger { display: flex; }
+    .nav-links {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(2,4,8,0.97);
+      backdrop-filter: blur(20px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 150;
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.77,0,0.18,1);
+    }
+    .nav-links.open { display: flex; transform: translateX(0); }
+    .nav-links a { font-size: 20px; letter-spacing: 4px; color: var(--text); }
+    .nav-links a:hover { color: var(--accent); }
+  }
+
+  /* RESPONSIVE — TABLET (≤1024px) */
+  @media (max-width: 1024px) {
+    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+    .skill-card[style*="span 3"] { grid-column: span 2; }
+    .about-photo { width: 260px; height: 330px; }
+    nav { padding: 20px 32px; }
+  }
+
+  /* RESPONSIVE — MOBILE (≤768px) */
+  @media (max-width: 768px) {
+    /* Nav — burger menu */
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .nav-logo { font-size: 16px; }
+
+    /* Убираем кастомный курсор на тач-устройствах */
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+    .contact-link { cursor: pointer; }
+
+    /* Hero */
+    #hero { padding: 100px 20px 60px; min-height: 100svh; }
+    .hero-name { letter-spacing: 0px; }
+    .hero-sub { font-size: 15px; }
+    .hero-btns { gap: 12px; }
+    .btn { padding: 12px 24px; font-size: 12px; }
+    .hero-stats { gap: 20px; flex-wrap: wrap; justify-content: center; }
+    .stat-num { font-size: 28px; }
+
+    /* Orbits — уменьшить */
+    .orbit-1 { width: 280px; height: 280px; }
+    .orbit-2 { width: 420px; height: 420px; }
+    .orbit-3 { width: 560px; height: 560px; }
+
+    /* Container */
+    .container { padding: 0 20px; }
+
+    /* Section padding */
+    #about, #skills, #projects, #achievements, #experience, #contact { padding: 80px 0; }
+
+    /* Section titles */
+    .section-title { font-size: 24px; }
+
+    /* About */
+    .about-grid { grid-template-columns: 1fr; gap: 36px; text-align: center; }
+    .about-photo-wrap { justify-content: center; }
+    .about-photo { width: 220px; height: 280px; }
+    .about-tags { justify-content: center; }
+
+    /* Skills */
+    .skills-grid { grid-template-columns: 1fr; }
+    .skill-card[style*="span 3"] { grid-column: span 1; }
+
+    /* Projects */
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.featured { grid-column: span 1; }
+    .project-card.featured h3 { font-size: 20px; }
+    .project-card { padding: 24px; }
+
+    /* Achievements */
+    .achievements-list { grid-template-columns: 1fr; }
+    .ach-item { padding: 20px; }
+
+    /* Experience timeline */
+    .exp-timeline { padding-left: 20px; }
+    .exp-item { padding: 0 0 36px 28px; }
+
+    /* Contact */
+    .contact-inner p { font-size: 15px; }
+    .contact-links { flex-direction: column; align-items: center; }
+    .contact-link { width: 100%; max-width: 280px; justify-content: center; }
+
+    /* Footer */
+    footer { padding: 30px 20px; }
+  }
+
+  /* RESPONSIVE — SMALL MOBILE (≤400px) */
+  @media (max-width: 400px) {
+    .hero-name { font-size: 36px; }
+    .hero-badge { font-size: 10px; letter-spacing: 2px; padding: 5px 14px; }
+    .stat-num { font-size: 24px; }
+    .hero-stats { gap: 16px; }
+    .section-title { font-size: 20px; }
+    .about-photo { width: 180px; height: 230px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⬡ MERCURY</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" onclick="closeMenu()">Обо мне</a></li>
+    <li><a href="#skills" onclick="closeMenu()">Навыки</a></li>
+    <li><a href="#projects" onclick="closeMenu()">Проекты</a></li>
+    <li><a href="#achievements" onclick="closeMenu()">Достижения</a></li>
+    <li><a href="#contact" onclick="closeMenu()">Контакт</a></li>
+  </ul>
+  <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orbit-wrap">
+    <div class="orbit orbit-1"><div class="planet planet-1"></div></div>
+    <div class="orbit orbit-2"><div class="planet planet-2"></div></div>
+    <div class="orbit orbit-3"><div class="planet planet-3"></div></div>
+  </div>
+  <div class="hero-inner">
+    <span class="hero-badge">// Выпускник · Разработчик · Дизайнер</span>
+    <h1 class="hero-name">
+      <span class="line1">ФУРУЗОНФАР</span>
+      <span class="mercury">MERCURY</span>
+    </h1>
+    <p class="hero-sub">
+      Frontend-разработчик & UI-дизайнер · <span>Казань → Узбекистан</span>
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-primary">Проекты</a>
+      <a href="#contact" class="btn btn-outline">Связаться</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">5+</span>
+        <span class="stat-label">Лет в дизайне</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">2°</span>
+        <span class="stat-label">Хакатон РФ</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">50+</span>
+        <span class="stat-label">Достижений</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">КМС</span>
+        <span class="stat-label">Большой теннис</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 001 — Обо мне</span>
+      <h2 class="section-title">Кто такой Mercury?</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-photo-wrap reveal">
+        <div class="about-photo">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(79,195,247,0.4)">[ ФОТО ]</span>
+        </div>
+        <div class="photo-glow"></div>
+      </div>
+      <div class="about-text reveal">
+        <h3>Фурузонфар Зикриёев</h3>
+        <p>Родился в <strong>Таджикистане</strong>, вырос как специалист в <strong>России</strong>. Окончил российскую школу, прошёл курс по Frontend-разработке, поступил в <strong>КНИТУ (Казань)</strong> на специальность «Информационные системы и технологии».</p>
+        <p>Я называю себя Mercury — быстрый, точный, всегда в движении. Совмещаю разработку с дизайном: <strong>5 лет в графическом дизайне</strong> (Photoshop, CorelDraw) дают мне понимание визуала, которого не хватает многим разработчикам.</p>
+        <p>Помимо IT — <strong>кандидат в мастера спорта по большому теннису</strong> и активный участник культурной жизни университета. Более 50 наград разного уровня.</p>
+        <div class="about-tags">
+          <span class="tag">Таджикистан 🇹🇯</span>
+          <span class="tag">Россия 🇷🇺</span>
+          <span class="tag">Узбекистан 🇺🇿</span>
+          <span class="tag">Frontend</span>
+          <span class="tag">Design</span>
+          <span class="tag">КМС Теннис</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 002 — Навыки</span>
+      <h2 class="section-title">Стек технологий</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-grid">
+
+      <div class="skill-card reveal">
+        <div class="skill-icon">🌐</div>
+        <h4>Frontend</h4>
+        <ul class="skill-list">
+          <li>HTML / CSS <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div></li>
+          <li>JavaScript <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div></div></li>
+          <li>Vue.js <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>Node.js <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>Tilda (конструктор) <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div></li>
+        </ul>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon">🎨</div>
+        <h4>Дизайн</h4>
+        <ul class="skill-list">
+          <li>CorelDraw <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div></li>
+          <li>Adobe Photoshop <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div></div></li>
+          <li>Figma <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></li>
+        </ul>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon">⚙️</div>
+        <h4>Backend & Tools</h4>
+        <ul class="skill-list">
+          <li>Python <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>Базы данных / SQL <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>API / REST <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div></div></li>
+          <li>Swift (iOS) <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>Git <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+        </ul>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon">🌍</div>
+        <h4>Языки</h4>
+        <ul class="skill-list">
+          <li>Русский <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div></li>
+          <li>Таджикский <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div></div></li>
+          <li>Английский <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></li>
+        </ul>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-icon">🔧</div>
+        <h4>Прочие инструменты</h4>
+        <ul class="skill-list">
+          <li>1С: Предприятие <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>Моделирование систем <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+          <li>UML / диаграммы <div class="skill-level"><div class="dot filled"></div><div class="dot filled"></div><div class="dot filled"></div><div class="dot"></div><div class="dot"></div></div></li>
+        </ul>
+      </div>
+
+      <div class="skill-card reveal" style="grid-column: span 3; background: linear-gradient(135deg, rgba(10,22,40,0.9), rgba(12,18,35,0.9));">
+        <div class="skill-icon">🎯</div>
+        <h4>Soft Skills & Прочее</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;">
+          <span class="tag">Командная работа</span>
+          <span class="tag">Самоорганизация</span>
+          <span class="tag">Спортивная дисциплина</span>
+          <span class="tag">Креативное мышление</span>
+          <span class="tag">UI/UX чутьё</span>
+          <span class="tag">Многозадачность</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 003 — Проекты</span>
+      <h2 class="section-title">Работы</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
+
+      <!-- FEATURED -->
+      <div class="project-card featured reveal">
+        <div class="project-glow"></div>
+        <span class="project-badge">★ Дипломная работа · 2026</span>
+        <div class="project-num">ПРОЕКТ 01</div>
+        <h3>DotaAI — Интеллектуальная система аналитики</h3>
+        <p class="project-desc">Полноценная AI-система персональной аналитики игроков Dota 2 — дипломный проект по специальности «Информационные системы и технологии». Система анализирует игровые данные через открытый API, строит профили игроков и выдаёт персонализированные рекомендации на основе алгоритмов машинного обучения.</p>
+        <div class="project-tech">
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">AI / ML</span>
+          <span class="tech-tag">REST API</span>
+          <span class="tech-tag">База данных</span>
+          <span class="tech-tag">Node.js</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-glow"></div>
+        <div class="project-num">ПРОЕКТ 02</div>
+        <h3>Frontend Кейсы & Практика</h3>
+        <p class="project-desc">Серия практических заданий во время обучения: лендинги, интерактивные компоненты, анимации на чистом JS, адаптивная вёрстка. Каждый кейс — отдельная задача: от навигации до сложных CSS/JS-эффектов.</p>
+        <div class="project-tech">
+          <span class="tech-tag">HTML</span>
+          <span class="tech-tag">CSS</span>
+          <span class="tech-tag">JavaScript</span>
+          <span class="tech-tag">Анимации</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-glow"></div>
+        <div class="project-num">ПРОЕКТ 03</div>
+        <h3>DB Web Interface</h3>
+        <p class="project-desc">Веб-приложение для работы с базой данных: подключение БД, CRUD-операции, SQL-запросы через интерфейс. Университетский проект по курсу «Базы данных».</p>
+        <div class="project-tech">
+          <span class="tech-tag">SQL</span>
+          <span class="tech-tag">БД</span>
+          <span class="tech-tag">Web</span>
+          <span class="tech-tag">Backend</span>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-glow"></div>
+        <div class="project-num">ПРОЕКТ 04</div>
+        <h3>Коммерческие сайты — BO/BO Studio</h3>
+        <p class="project-desc">Реальные сайты для клиентов веб-студии BO/BO (Таджикистан). Разработка в соло: от идеи до реализации. Использовал Tilda и собственную вёрстку.</p>
+        <div class="project-tech">
+          <span class="tech-tag">Tilda</span>
+          <span class="tech-tag">HTML/CSS</span>
+          <span class="tech-tag">Дизайн</span>
+          <span class="tech-tag">Клиенты</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 004 — Достижения</span>
+      <h2 class="section-title">Результаты</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="achievements-list">
+      <div class="ach-item reveal">
+        <div class="ach-icon">🥈</div>
+        <div class="ach-content">
+          <h4>2 место — Всероссийский хакатон, Ростов-на-Дону</h4>
+          <p>2024 год. Призовой фонд 50 000 ₽. Командная разработка IT-решения на соревновании федерального уровня.</p>
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">🎾</div>
+        <div class="ach-content">
+          <h4>Кандидат в мастера спорта — Большой теннис</h4>
+          <p>Высокий спортивный разряд по большому теннису. Демонстрирует дисциплину, стратегическое мышление и упорство.</p>
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">🏆</div>
+        <div class="ach-content">
+          <h4>50+ наград в культурных мероприятиях</h4>
+          <p>Активный участник общественной, культурной и студенческой жизни. Мероприятия различных уровней — от университетских до международных.</p>
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">🎓</div>
+        <div class="ach-content">
+          <h4>Диплом бакалавра — КНИТУ, Казань</h4>
+          <p>2026 г. Специальность: Информационные системы и технологии. Казанский национальный исследовательский технологический университет.</p>
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">📜</div>
+        <div class="ach-content">
+          <h4>Сертификат Frontend-разработчика</h4>
+          <p>Профессиональный курс по Frontend-разработке. Подтверждённые знания HTML, CSS, JavaScript и работы с анимациями.</p>
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">🎨</div>
+        <div class="ach-content">
+          <h4>5 лет в графическом дизайне</h4>
+          <p>Самостоятельное развитие в Photoshop и CorelDraw. Уникальное сочетание дизайн-мышления и технической разработки.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 005 — Путь</span>
+      <h2 class="section-title">Образование & Опыт</h2>
+      <div class="section-line"></div>
+    </div>
+    <div style="max-width: 700px; margin: 0 auto;">
+      <div class="exp-timeline">
+        <div class="exp-item reveal">
+          <div class="exp-date">2022 — Июнь 2026</div>
+          <h4>Бакалавриат — Информационные системы и технологии</h4>
+          <div class="exp-company">КНИТУ — Казань, Россия</div>
+          <p class="exp-desc">Казанский национальный исследовательский технологический университет. Участие в хакатонах федерального уровня, разработка учебных и дипломного проектов (DotaAI), активная общественная жизнь — более 50 наград.</p>
+        </div>
+        <div class="exp-item reveal">
+          <div class="exp-date">2023 · ~3 месяца</div>
+          <h4>Web-разработчик</h4>
+          <div class="exp-company">Web Studio BO/BO — Таджикистан</div>
+          <p class="exp-desc">Коммерческая разработка сайтов в соло. Самостоятельно придумывал концепции, проектировал UI и реализовывал — от первого блока до сдачи клиенту. Tilda и кастомная вёрстка HTML/CSS/JS.</p>
+        </div>
+        <div class="exp-item reveal">
+          <div class="exp-date">До 2022</div>
+          <h4>Курс Frontend-разработки</h4>
+          <div class="exp-company">Таджикистан</div>
+          <p class="exp-desc">Профессиональный курс по Frontend-разработке. Изучение HTML, CSS, JavaScript, работа с анимациями. Получен сертификат об окончании.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 006 — Контакты</span>
+      <h2 class="section-title">Открыт для предложений</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-inner">
+      <p class="reveal">Если ваша компания ищет специалиста в области IT — разработки, дизайна интерфейсов или информационных систем — готов рассмотреть предложения. Быстро обучаюсь, работаю на результат, совмещаю техническое и визуальное мышление.</p>
+      <div class="contact-links reveal">
+        <a href="https://t.me/mercury23" class="contact-link" target="_blank">
+          <span>✈</span> Telegram
+        </a>
+        <a href="https://wa.me/79969025411" class="contact-link" target="_blank">
+          <span>📱</span> WhatsApp
+        </a>
+        <a href="mailto:zff2304@mail.ru" class="contact-link">
+          <span>✉</span> Email
+        </a>
+        <a href="https://instagram.com/mercury.1.9" class="contact-link" target="_blank">
+          <span>◎</span> Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin-bottom:8px;font-family:'Orbitron',monospace;color:var(--accent);letter-spacing:3px;">⬡ MERCURY</p>
+  <p>© 2026 Фурузонфар Зикриёев · Казань → Узбекистан</p>
+</footer>
+
+<script>
+// BURGER MENU
+function toggleMenu() {
+  const burger = document.getElementById('burger');
+  const nav = document.getElementById('navLinks');
+  burger.classList.toggle('open');
+  nav.classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('navLinks').classList.remove('open');
+}
+
+// STARFIELD
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5,
+      alpha: Math.random(),
+      speed: Math.random() * 0.3 + 0.05,
+      twinkle: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    s.twinkle += 0.02;
+    s.alpha = 0.3 + Math.sin(s.twinkle) * 0.3;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200, 220, 255, ${s.alpha})`;
+    ctx.fill();
+  });
+  // Shooting star occasionally
+  requestAnimationFrame(drawStars);
+}
+
+// Shooting stars
+let shootingStars = [];
+function createShootingStar() {
+  shootingStars.push({
+    x: Math.random() * canvas.width * 0.7,
+    y: Math.random() * canvas.height * 0.3,
+    len: Math.random() * 80 + 60,
+    speed: Math.random() * 8 + 5,
+    alpha: 1,
+    angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3
+  });
+}
+setInterval(createShootingStar, 4000);
+
+function animateAll() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Stars
+  stars.forEach(s => {
+    s.twinkle += 0.015;
+    s.alpha = 0.2 + Math.sin(s.twinkle) * 0.25;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200, 220, 255, ${s.alpha})`;
+    ctx.fill();
+  });
+
+  // Shooting stars
+  shootingStars = shootingStars.filter(ss => ss.alpha > 0);
+  shootingStars.forEach(ss => {
+    ctx.save();
+    ctx.globalAlpha = ss.alpha;
+    const grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+    grad.addColorStop(0, 'rgba(79,195,247,1)');
+    grad.addColorStop(1, 'rgba(79,195,247,0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(ss.x, ss.y);
+    ctx.lineTo(ss.x - Math.cos(ss.angle) * ss.len, ss.y - Math.sin(ss.angle) * ss.len);
+    ctx.stroke();
+    ctx.restore();
+    ss.x += Math.cos(ss.angle) * ss.speed;
+    ss.y += Math.sin(ss.angle) * ss.speed;
+    ss.alpha -= 0.02;
+  });
+
+  requestAnimationFrame(animateAll);
+}
+
+resize();
+initStars();
+animateAll();
+window.addEventListener('resize', () => { resize(); initStars(); });
+
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
+
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '20px';
+    cursor.style.height = '20px';
+    cursor.style.background = 'var(--gold)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '12px';
+    cursor.style.height = '12px';
+    cursor.style.background = 'var(--accent)';
+  });
+});
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.1 });
+reveals.forEach(el => observer.observe(el));
+
+// PARALLAX on hero orbits
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  document.querySelector('.orbit-wrap').style.transform =
+    `translate(-50%, calc(-50% + ${y * 0.3}px))`;
+});
+</script>
+</body>
+</html>
