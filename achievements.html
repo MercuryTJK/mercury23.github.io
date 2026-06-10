@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Достижения — Mercury</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Russo+One&family=Syne:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:   #020408;
+    --deep:    #060b14;
+    --navy:    #0a1628;
+    --accent:  #4fc3f7;
+    --accent2: #7c4dff;
+    --gold:    #ffd54f;
+    --text:    #e8edf5;
+    --muted:   #6b7fa3;
+    --card:    rgba(10,22,40,0.85);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden; cursor: none; min-height: 100vh;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 12px; height: 12px; background: var(--accent);
+    border-radius: 50%; position: fixed; pointer-events: none;
+    z-index: 9999; transform: translate(-50%,-50%);
+    transition: width .2s, height .2s, background .2s; mix-blend-mode: screen;
+  }
+  .cursor.big { width: 24px; height: 24px; background: var(--gold); }
+  .cursor-ring {
+    width: 36px; height: 36px; border: 1px solid rgba(79,195,247,0.4);
+    border-radius: 50%; position: fixed; pointer-events: none;
+    z-index: 9998; transform: translate(-50%,-50%); transition: transform .15s ease;
+  }
+
+  /* STARS */
+  #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 60px;
+    background: linear-gradient(to bottom, rgba(2,4,8,0.95), transparent);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 900;
+    color: var(--accent); letter-spacing: 3px; text-decoration: none;
+    text-shadow: 0 0 20px var(--accent);
+  }
+  .nav-back {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    letter-spacing: 2px; color: var(--muted); text-decoration: none;
+    text-transform: uppercase; transition: color .3s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-back::before { content: '←'; font-size: 16px; }
+  .nav-back:hover { color: var(--accent); }
+
+  /* HEADER */
+  .page-header {
+    position: relative; z-index: 1;
+    padding: 140px 60px 80px; text-align: center;
+  }
+  .page-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 4px; color: var(--accent); text-transform: uppercase;
+    display: block; margin-bottom: 20px; animation: fadeUp .8s ease both;
+  }
+  .page-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(36px, 6vw, 72px); font-weight: 900; line-height: 1;
+    animation: fadeUp .8s .1s ease both;
+  }
+  .page-title span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .page-sub { margin-top: 20px; font-size: 17px; color: var(--muted); animation: fadeUp .8s .2s ease both; }
+
+  /* FILTERS */
+  .filters {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    padding: 0 60px 60px; animation: fadeUp .8s .3s ease both;
+  }
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 9px 22px; border: 1px solid rgba(79,195,247,0.25);
+    border-radius: 30px; background: transparent; color: var(--muted);
+    cursor: none; transition: all .3s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(79,195,247,0.08); box-shadow: 0 0 20px rgba(79,195,247,0.15);
+  }
+
+  /* GALLERY */
+  .gallery-wrap {
+    position: relative; z-index: 1;
+    max-width: 1440px; margin: 0 auto; padding: 0 60px 120px;
+  }
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;
+  }
+  .gallery-counter {
+    text-align: center; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 40px;
+  }
+  .gallery-counter span { color: var(--accent); }
+
+  /* CARD */
+  .ach-card {
+    position: relative; border-radius: 14px; overflow: hidden;
+    cursor: none; background: var(--card);
+    border: 1px solid rgba(79,195,247,0.1);
+    transition: transform .4s cubic-bezier(.175,.885,.32,1.275), border-color .3s, box-shadow .4s;
+    opacity: 0; transform: translateY(40px);
+  }
+  .ach-card.visible { animation: cardIn .6s ease forwards; }
+  .ach-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(79,195,247,0.5);
+    box-shadow: 0 20px 60px rgba(79,195,247,0.2), 0 0 0 1px rgba(79,195,247,0.2);
+    z-index: 2;
+  }
+
+  /* Card image */
+  .card-img {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    transition: transform .5s ease;
+  }
+  .ach-card:hover .card-img img { transform: scale(1.05); }
+  .card-img::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(79,195,247,0.15) 0%, transparent 60%);
+    opacity: 0; transition: opacity .4s; z-index: 1; pointer-events: none;
+  }
+  .ach-card:hover .card-img::after { opacity: 1; }
+
+  /* Placeholder */
+  .card-img-placeholder {
+    width: 100%; height: 100%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+    background: linear-gradient(135deg, rgba(10,22,40,1), rgba(20,35,65,1));
+  }
+  .placeholder-icon { font-size: 48px; opacity: .4; }
+  .placeholder-text {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 3px; color: var(--muted); text-transform: uppercase;
+  }
+
+  /* Zoom hint */
+  .card-zoom-hint {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .3s; z-index: 2; pointer-events: none;
+  }
+  .ach-card:hover .card-zoom-hint { opacity: 1; }
+  .zoom-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(2,4,8,0.75); border: 1px solid rgba(79,195,247,0.5);
+    backdrop-filter: blur(8px); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 20px; color: var(--accent);
+  }
+
+  /* Card info */
+  .card-info { padding: 20px 22px 22px; }
+  .card-category { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  .cat-it      { color: var(--accent); }
+  .cat-sport   { color: var(--gold); }
+  .cat-culture { color: var(--accent2); }
+  .cat-edu     { color: #69f0ae; }
+  .card-title  { font-family: 'Orbitron', monospace; font-size: 14px; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
+  .card-desc   { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* Badge */
+  .card-badge {
+    position: absolute; top: 14px; right: 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; z-index: 3;
+  }
+  .badge-gold { background: rgba(255,213,79,0.15); border: 1px solid rgba(255,213,79,0.5); color: var(--gold); }
+  .badge-blue { background: rgba(79,195,247,0.12); border: 1px solid rgba(79,195,247,0.4); color: var(--accent); }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(2,4,8,0.95); backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center; padding: 60px;
+    opacity: 0; pointer-events: none; transition: opacity .35s ease;
+  }
+  .lightbox.open { opacity: 1; pointer-events: all; }
+  .lightbox-inner {
+    position: relative; max-width: 1000px; max-height: 85vh; width: 100%;
+    transform: scale(.92); transition: transform .35s cubic-bezier(.175,.885,.32,1.275);
+  }
+  .lightbox.open .lightbox-inner { transform: scale(1); }
+  .lightbox-img {
+    width: 100%; max-height: 75vh; object-fit: contain; border-radius: 10px;
+    border: 1px solid rgba(79,195,247,0.2); box-shadow: 0 0 80px rgba(79,195,247,0.15); display: block;
+  }
+  .lightbox-caption { margin-top: 20px; text-align: center; }
+  .lightbox-caption h3 { font-family: 'Orbitron', monospace; font-size: 16px; color: var(--text); margin-bottom: 6px; }
+  .lightbox-caption p { font-size: 14px; color: var(--muted); }
+  .lightbox-close {
+    position: absolute; top: -20px; right: -20px; width: 44px; height: 44px;
+    border-radius: 50%; background: var(--navy); border: 1px solid rgba(79,195,247,0.3);
+    color: var(--accent); font-size: 20px; cursor: none;
+    display: flex; align-items: center; justify-content: center; transition: all .3s;
+  }
+  .lightbox-close:hover { background: rgba(79,195,247,0.15); border-color: var(--accent); }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(10,22,40,0.85); border: 1px solid rgba(79,195,247,0.3);
+    color: var(--accent); font-size: 22px; cursor: none;
+    display: flex; align-items: center; justify-content: center; transition: all .3s; z-index: 2;
+  }
+  .lightbox-nav:hover { border-color: var(--accent); background: rgba(79,195,247,0.12); }
+  .lb-prev { left: -70px; }
+  .lb-next { right: -70px; }
+
+  /* FOOTER */
+  footer {
+    position: relative; z-index: 1; padding: 40px; text-align: center;
+    border-top: 1px solid rgba(79,195,247,0.08);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+    nav { padding: 16px 20px; }
+    .page-header { padding: 100px 24px 50px; }
+    .filters { padding: 0 24px 40px; }
+    .gallery-wrap { padding: 0 20px 80px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .lightbox { padding: 20px; }
+    .lb-prev { left: 8px; } .lb-next { right: 8px; }
+    .lightbox-nav { top: auto; bottom: -60px; transform: none; }
+  }
+  @media (max-width: 480px) { .gallery-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">⬡ MERCURY</a>
+  <a href="index.html" class="nav-back">На главную</a>
+</nav>
+
+<div class="page-header">
+  <span class="page-tag">// Портфолио · Достижения</span>
+  <h1 class="page-title">МОИ <span>ДОСТИЖЕНИЯ</span></h1>
+  <p class="page-sub">IT · Спорт · Культура · Образование</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-filter="all">Все</button>
+  <button class="filter-btn" data-filter="it">IT</button>
+  <button class="filter-btn" data-filter="sport">Спорт</button>
+  <button class="filter-btn" data-filter="culture">Культура</button>
+  <button class="filter-btn" data-filter="edu">Образование</button>
+</div>
+
+<div class="gallery-wrap">
+  <div class="gallery-counter">
+    Показано: <span id="visibleCount">0</span> из <span id="totalCount">0</span>
+  </div>
+
+  <div class="gallery-grid" id="grid">
+<!-- 1 -->
+    <div class="ach-card" data-cat="it"
+     data-title="Сертификат об участии в Хакатоне"
+     data-desc="30.03.2024 · г. Ростов-на-Дону · Хакатон всероссийского уровня — 2 место с призовым 50 000 ₽"
+     data-img="achievements/hakaton2.jpg">
+  <div class="card-img">
+    <img src="achievements/hakaton2.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-it">IT</div>
+    <div class="card-title">Сертификат об участии в Хакатоне</div>
+    <div class="card-desc">30.03.2024 · г. Ростов-на-Дону · Хакатон всероссийского уровня — 2 место с призовым 50 000 ₽</div>
+  </div>
+</div>
+<!-- 2 -->
+<div class="ach-card" data-cat="it"
+     data-title="Сертификат на приз"
+     data-desc="30.03.2024 · г. Ростов-на-Дону · Победа со 2 местом в хакатоне всероссийского уровня с выигрышем 50 000 ₽"
+     data-img="achievements/hakaton1.jpeg">
+  <div class="card-img">
+    <img src="achievements/hakaton1.jpeg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-it">IT</div>
+    <div class="card-title">Сертификат на приз</div>
+    <div class="card-desc">30.03.2024 · г. Ростов-на-Дону · Победа со 2 местом в хакатоне всероссийского уровня с выигрышем 50 000 ₽</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">★ Призовое место</span>
+  </div>
+</div>
+<!-- 3 -->
+<div class="ach-card" data-cat="sport"
+     data-title="Кандидат в мастера спорта — Большой теннис"
+     data-desc="30.08.2021 · Республика Таджикистан, г. Душанбе · Высокий спортивный разряд, подтверждающий профессиональный уровень игры"
+     data-img="achievements/kms.jpeg">
+  <div class="card-img">
+    <img src="achievements/kms.jpeg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">Кандидат в мастера спорта — Большой теннис</div>
+    <div class="card-desc">30.08.2021 · г. Душанбе · Присвоен высокий спортивный разряд за стабильные результаты на соревнованиях республиканского уровня</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">КМС</span>
+  </div>
+</div>
+<!-- 4 -->
+<div class="ach-card" data-cat="sport"
+     data-title="Чемпион Республики Таджикистан по теннису"
+     data-desc="25.04.2021 · Республика Таджикистан, г. Душанбе · Звание первой ракетки Республики Таджикистан среди игроков до 18 лет"
+     data-img="achievements/sport1.jpg">
+  <div class="card-img">
+    <img src="achievements/sport1.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">Чемпион Республики Таджикистан по теннису</div>
+    <div class="card-desc">25.04.2021 · г. Душанбе · Первая ракетка Республики Таджикистан среди игроков до 18 лет</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">★ Чемпион</span>
+  </div>
+</div>
+<!-- 5-6 -->
+<div class="ach-card" data-cat="edu"
+     data-title="Грамота — Курс «Верстальщик»"
+     data-desc="27.04.2021 · г. Душанбе · WebAcademy Dushanbe · Успешное окончание профессионального курса по вёрстке"
+     data-img="achievements/web1.jpg">
+  <div class="card-img">
+    <img src="achievements/web1.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-edu">Образование</div>
+    <div class="card-title">Курс «Верстальщик» — WebAcademy Dushanbe</div>
+    <div class="card-desc">27.04.2021 · г. Душанбе · Успешное окончание профессионального курса по вёрстке</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Сертификат</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="edu"
+     data-title="Грамота — Курс «Frontend-разработчик»"
+     data-desc="28.03.2022 · г. Душанбе · WebAcademy Dushanbe · Успешное завершение курса по Frontend-разработке"
+     data-img="achievements/web2.jpg">
+  <div class="card-img">
+    <img src="achievements/web2.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-edu">Образование</div>
+    <div class="card-title">Курс «Frontend-разработчик» — WebAcademy Dushanbe</div>
+    <div class="card-desc">28.03.2022 · г. Душанбе · HTML, CSS, JavaScript, анимации — полный курс Frontend-разработки</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Сертификат</span>
+  </div>
+</div>
+<!-- 7-9 -->
+<div class="ach-card" data-cat="sport"
+     data-title="2 место — Таэквондо, возраст 9–10 лет"
+     data-desc="11.01.2015 · г. Душанбе · 2 место среди спортсменов 9–10 лет"
+     data-img="achievements/sport2.jpg">
+  <div class="card-img">
+    <img src="achievements/sport2.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">2 место — Таэквондо, возраст 9–10 лет</div>
+    <div class="card-desc">11.01.2015 · г. Душанбе · Серебро среди спортсменов возрастной группы 9–10 лет</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="sport"
+     data-title="3 место — Теннис, республиканский уровень"
+     data-desc="20.12.2020 · г. Душанбе · Соревнование республиканского уровня по большому теннису"
+     data-img="achievements/sport3.jpg">
+  <div class="card-img">
+    <img src="achievements/sport3.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">3 место — Теннис, республиканский уровень</div>
+    <div class="card-desc">20.12.2020 · г. Душанбе · Бронза на соревновании республиканского уровня по большому теннису</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">🥉 3 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="sport"
+     data-title="3 место — Теннис, республиканский уровень"
+     data-desc="31.10.2020 · г. Душанбе · Соревнование республиканского уровня по большому теннису"
+     data-img="achievements/sport4.jpg">
+  <div class="card-img">
+    <img src="achievements/sport4.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">3 место — Теннис, республиканский уровень</div>
+    <div class="card-desc">31.10.2020 · г. Душанбе · Бронза на соревновании республиканского уровня по большому теннису</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">🥉 3 место</span>
+  </div>
+</div>
+<!-- 10-12 -->
+ <div class="ach-card" data-cat="sport"
+     data-title="2 место — Теннис, до 18 лет, Куляб"
+     data-desc="01.11.2020 · Республика Таджикистан, г. Куляб · 2 место среди игроков до 18 лет"
+     data-img="achievements/10.jpg">
+  <div class="card-img">
+    <img src="achievements/10.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">2 место — Теннис, до 18 лет</div>
+    <div class="card-desc">01.11.2020 · г. Куляб · Серебро на соревновании среди игроков до 18 лет Республики Таджикистан</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="sport"
+     data-title="2 место — Теннис, до 18 лет, Худжанд"
+     data-desc="26.06.2021 · г. Худжанд · 2 место среди игроков до 18 лет Республики Таджикистан"
+     data-img="achievements/11.jpg">
+  <div class="card-img">
+    <img src="achievements/11.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">2 место — Теннис, до 18 лет</div>
+    <div class="card-desc">26.06.2021 · г. Худжанд · Серебро на соревновании среди игроков до 18 лет Республики Таджикистан</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="sport"
+     data-title="2 место — Теннис, 14–17 лет, Душанбе"
+     data-desc="19.03.2021 · Республика Таджикистан, г. Душанбе · 2 место среди игроков 14–17 лет республиканского уровня"
+     data-img="achievements/12.jpg">
+  <div class="card-img">
+    <img src="achievements/12.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">2 место — Теннис, 14–17 лет</div>
+    <div class="card-desc">19.03.2021 · г. Душанбе · Серебро на республиканском соревновании среди игроков 14–17 лет</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+<!-- 13-14 -->
+ <div class="ach-card" data-cat="sport"
+     data-title="2 место — Теннис, 14–17 лет, Худжанд"
+     data-desc="18.10.2020 · г. Худжанд · Серебро на республиканском соревновании среди игроков 14–17 лет"
+     data-img="achievements/13.jpg">
+  <div class="card-img">
+    <img src="achievements/13.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-sport">Спорт</div>
+    <div class="card-title">2 место — Теннис, 14–17 лет</div>
+    <div class="card-desc">18.10.2020 · г. Худжанд · Серебро на республиканском соревновании среди игроков 14–17 лет</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Студент года Республики Татарстан 2024"
+     data-desc="2024 · Республика Татарстан, г. Казань · Медиацентр профкома КНИТУ прошёл конкурсный отбор и участвовал в очном этапе Республиканской премии"
+     data-img="achievements/14.jpeg">
+  <div class="card-img">
+    <img src="achievements/14.jpeg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Республиканская премия «Студент года — 2024»</div>
+    <div class="card-desc">2024 · г. Казань · Руководитель направления дизайна медиацентра профкома КНИТУ. Команда прошла конкурсный отбор и участвовала в очном этапе премии Республики Татарстан</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Руководитель</span>
+  </div>
+</div>
+<!-- 15-17 -->
+<div class="ach-card" data-cat="culture"
+     data-title="3 место — Студенческий лидер КНИТУ 2024"
+     data-desc="Апрель 2024 · Республика Татарстан, г. Казань · Диплом за 3 место в отборочном этапе конкурса «Студенческий лидер КНИТУ 2024»"
+     data-img="achievements/15.jpg">
+  <div class="card-img">
+    <img src="achievements/15.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">3 место — Студенческий лидер КНИТУ 2024</div>
+    <div class="card-desc">Апрель 2024 · г. Казань · Диплом за 3 место в отборочном этапе конкурса «Студенческий лидер КНИТУ 2024»</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">🥉 3 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — Общажный коннект 2023"
+     data-desc="2023 · Республика Татарстан, г. Казань · Форум студенческих советов общежитий Республики Татарстан"
+     data-img="achievements/16.jpg">
+  <div class="card-img">
+    <img src="achievements/16.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — «Общажный коннект» 2023</div>
+    <div class="card-desc">2023 · г. Казань · Разработал полную стилистику форума: логотип, публикации, баннеры, раздатка и грамоты для студенческих советов общежитий РТ</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Дизайнер проекта</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — Агитбригады КНИТУ 2024"
+     data-desc="2024 · Республика Татарстан, г. Казань · Конкурс студенческих агитационных бригад КНИТУ"
+     data-img="achievements/17.jpg">
+  <div class="card-img">
+    <img src="achievements/17.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — Агитбригады КНИТУ 2024</div>
+    <div class="card-desc">2024 · г. Казань · Полная дизайн-стилистика конкурса: логотип, посты, баннеры, раздатка и грамоты для агитационных бригад КНИТУ</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Дизайнер проекта</span>
+  </div>
+</div> 
+<!-- 18-20 -->
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — ЗОЖ ФЕСТ"
+     data-desc="г. Казань · Фестиваль здорового образа жизни «ЗОЖ ФЕСТ» · Полная дизайн-стилистика мероприятия"
+     data-img="achievements/18.jpg">
+  <div class="card-img">
+    <img src="achievements/18.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — «ЗОЖ ФЕСТ»</div>
+    <div class="card-desc">г. Казань · Разработал полную дизайн-стилистику фестиваля: логотип, посты, баннеры, раздатка и грамоты</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Дизайнер проекта</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — «Первый опыт 2023»"
+     data-desc="2023 · г. Казань · Посвящение первокурсников КНИТУ в формате студенческого лагеря"
+     data-img="achievements/19.jpeg">
+  <div class="card-img">
+    <img src="achievements/19.jpeg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — «Первый опыт 2023»</div>
+    <div class="card-desc">2023 · г. Казань · Приглашён как коммуникатор — знакомил первокурсников со студенческой жизнью в формате лагеря. Вклад в развитие студенческого самоуправления КНИТУ</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Спикер · Куратор</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — Студенческий лидер КНИТУ 2023"
+     data-desc="Май 2023 · г. Казань · Масштабный конкурс студенческого лидерства КНИТУ"
+     data-img="achievements/20.jpg">
+  <div class="card-img">
+    <img src="achievements/20.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — Студенческий лидер КНИТУ 2023</div>
+    <div class="card-desc">Май 2023 · г. Казань · Разработал 5 концепций стилистики на выбор, реализовал утверждённую: посты, раздатка, баннеры, бейджи и все материалы конкурса</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">★ Ведущий дизайнер</span>
+  </div>
+</div>
+<!-- 21-24 -->
+<div class="ach-card" data-cat="culture"
+     data-title="Благодарственное письмо — «Поколение» 2023"
+     data-desc="20.12.2023 · г. Казань · Круглогодичная школа профсоюзного актива «Поколение»"
+     data-img="achievements/21.jpg">
+  <div class="card-img">
+    <img src="achievements/21.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Благодарственное письмо — Школа «Поколение» 2023</div>
+    <div class="card-desc">20.12.2023 · г. Казань · Руководитель дизайна — полный ребрендинг проекта: новая стилистика, посты, раздатка, грамоты, съёмка контента для SMM</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">Руководитель дизайна</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="Топ-10 выпускников — Школа «Поколение» 2022"
+     data-desc="14.12.2022 · г. Казань · Межвузовская школа профсоюзного актива · Вошёл в топ-10 из 60–70 участников"
+     data-img="achievements/22.jpg">
+  <div class="card-img">
+    <img src="achievements/22.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">Топ-10 выпускников — Школа «Поколение» 2022</div>
+    <div class="card-desc">14.12.2022 · г. Казань · Значительный вклад в работу команды за период окт–дек 2022. Вошёл в топ-10 из ~70 участников межвузовской школы профсоюзного актива</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">★ Топ-10</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="culture"
+     data-title="2 место — Студенческий лидер 2022, Школа «Поколение»"
+     data-desc="14.12.2022 · г. Казань · Конкурс «Студенческий лидер» среди участников межвузовской школы профсоюзного актива"
+     data-img="achievements/23.jpg">
+  <div class="card-img">
+    <img src="achievements/23.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-culture">Культура</div>
+    <div class="card-title">2 место — Студенческий лидер 2022</div>
+    <div class="card-desc">14.12.2022 · г. Казань · Серебро в конкурсе «Студенческий лидер» среди участников межвузовской школы профсоюзного актива «Поколение»</div>
+    <span class="card-badge badge-gold" style="position:static;display:inline-block;margin-top:10px;">🥈 2 место</span>
+  </div>
+</div>
+
+<div class="ach-card" data-cat="edu"
+     data-title="Сертификат — Межвузовская школа «Поколение» 2022"
+     data-desc="01.10 – 14.12.2022 · г. Казань · Прошёл полный курс обучения межвузовской школы профсоюзного актива"
+     data-img="achievements/24.jpg">
+  <div class="card-img">
+    <img src="achievements/24.jpg">
+    <div class="card-zoom-hint"><div class="zoom-circle">⤢</div></div>
+  </div>
+  <div class="card-info">
+    <div class="card-category cat-edu">Образование</div>
+    <div class="card-title">Сертификат — Школа «Поколение» 2022</div>
+    <div class="card-desc">01.10 – 14.12.2022 · г. Казань · Полный курс межвузовской школы профсоюзного актива: лидерство, коммуникация, командная работа</div>
+    <span class="card-badge badge-blue" style="position:static;display:inline-block;margin-top:10px;">Сертификат</span>
+  </div>
+</div>
+
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" id="lbClose">✕</button>
+    <button class="lightbox-nav lb-prev" id="lbPrev">‹</button>
+    <button class="lightbox-nav lb-next" id="lbNext">›</button>
+    <img class="lightbox-img" id="lbImg" src="" alt="">
+    <div class="lightbox-caption">
+      <h3 id="lbTitle"></h3>
+      <p id="lbDesc"></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p style="font-family:'Orbitron',monospace;color:var(--accent);letter-spacing:3px;margin-bottom:8px;">⬡ MERCURY</p>
+  <p>© 2026 Фурузонфар Зикриёев · Достижения</p>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor');
+const ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cursor.style.left=mx+'px';cursor.style.top=my+'px';
+});
+(function animCursor(){
+  rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a,button,.ach-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursor.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cursor.classList.remove('big'));
+});
+
+// STARFIELD
+const canvas=document.getElementById('starfield');
+const ctx=canvas.getContext('2d');
+let stars=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+function initStars(){
+  stars=[];
+  for(let i=0;i<220;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.3,t:Math.random()*Math.PI*2});
+}
+function animStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{s.t+=.012;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${.2+Math.sin(s.t)*.22})`;ctx.fill();});
+  requestAnimationFrame(animStars);
+}
+resize();initStars();animStars();
+window.addEventListener('resize',()=>{resize();initStars();});
+
+// SCROLL REVEAL + COUNTER
+function initCards(){
+  const cards=[...document.querySelectorAll('.ach-card')];
+  document.getElementById('totalCount').textContent=cards.length;
+  document.getElementById('visibleCount').textContent=cards.length;
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}
+    });
+  },{threshold:.12});
+  cards.forEach(c=>obs.observe(c));
+
+  // cursor on new cards
+  cards.forEach(el=>{
+    el.addEventListener('mouseenter',()=>cursor.classList.add('big'));
+    el.addEventListener('mouseleave',()=>cursor.classList.remove('big'));
+  });
+
+  // FILTER
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const f=btn.dataset.filter;
+      let v=0;
+      cards.forEach(c=>{const match=f==='all'||c.dataset.cat===f;c.style.display=match?'':'none';if(match)v++;});
+      document.getElementById('visibleCount').textContent=v;
+    };
+  });
+
+  // LIGHTBOX
+  cards.forEach((card)=>{
+    card.addEventListener('click',()=>{
+      const active=cards.filter(c=>c.style.display!=='none');
+      const idx=active.indexOf(card);
+      if(idx>=0) openLB(active,idx);
+    });
+  });
+}
+
+// LIGHTBOX
+const lb=document.getElementById('lightbox');
+const lbImg=document.getElementById('lbImg');
+const lbTitle=document.getElementById('lbTitle');
+const lbDesc=document.getElementById('lbDesc');
+let lbCards=[],lbIdx=0;
+
+function openLB(cards,idx){
+  lbCards=cards;lbIdx=idx;
+  const c=lbCards[lbIdx];
+  const img=c.dataset.img;
+  lbImg.style.display=img?'block':'none';
+  if(img)lbImg.src=img;
+  lbTitle.textContent=c.dataset.title||'';
+  lbDesc.textContent=c.dataset.desc||'';
+  lb.classList.add('open');document.body.style.overflow='hidden';
+}
+function closeLB(){lb.classList.remove('open');document.body.style.overflow='';}
+document.getElementById('lbClose').onclick=closeLB;
+document.getElementById('lbPrev').onclick=()=>{lbIdx=(lbIdx-1+lbCards.length)%lbCards.length;openLB(lbCards,lbIdx);};
+document.getElementById('lbNext').onclick=()=>{lbIdx=(lbIdx+1)%lbCards.length;openLB(lbCards,lbIdx);};
+lb.addEventListener('click',e=>{if(e.target===lb)closeLB();});
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open'))return;
+  if(e.key==='Escape')closeLB();
+  if(e.key==='ArrowLeft')document.getElementById('lbPrev').click();
+  if(e.key==='ArrowRight')document.getElementById('lbNext').click();
+});
+
+// Запуск
+initCards();
+</script>
+</body>
+</html>

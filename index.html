@@ -564,6 +564,102 @@
     box-shadow: 0 8px 30px rgba(79,195,247,0.15);
   }
 
+  /* PORTFOLIO LINKS SECTION */
+  #portfolio { padding: 120px 0; }
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .portfolio-card {
+    position: relative;
+    border-radius: 16px;
+    padding: 48px 44px;
+    border: 1px solid rgba(79,195,247,0.15);
+    background: var(--card);
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    transition: transform .4s cubic-bezier(.175,.885,.32,1.275),
+                border-color .3s, box-shadow .4s;
+    cursor: none;
+  }
+  .portfolio-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(79,195,247,0.5);
+    box-shadow: 0 24px 60px rgba(79,195,247,0.15);
+  }
+  .portfolio-card.design-card {
+    background: linear-gradient(135deg, rgba(10,22,40,0.9), rgba(20,12,40,0.9));
+    border-color: rgba(124,77,255,0.2);
+  }
+  .portfolio-card.design-card:hover {
+    border-color: rgba(124,77,255,0.6);
+    box-shadow: 0 24px 60px rgba(124,77,255,0.15);
+  }
+  .pc-bg-num {
+    position: absolute; right: 32px; top: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 120px; font-weight: 900; line-height: 1;
+    color: rgba(79,195,247,0.04);
+    user-select: none; pointer-events: none; transition: color .4s;
+  }
+  .design-card .pc-bg-num { color: rgba(124,77,255,0.05); }
+  .portfolio-card:hover .pc-bg-num { color: rgba(79,195,247,0.08); }
+  .design-card:hover .pc-bg-num  { color: rgba(124,77,255,0.09); }
+  .pc-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 18px; display: block;
+  }
+  .pc-tag.blue   { color: var(--accent); }
+  .pc-tag.purple { color: var(--accent2); }
+  .pc-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px,3vw,32px); color: var(--text);
+    font-weight: 700; line-height: 1.2; margin-bottom: 16px;
+  }
+  .pc-desc {
+    font-size: 15px; color: var(--muted);
+    line-height: 1.7; margin-bottom: 32px; max-width: 380px;
+  }
+  .pc-stats { display: flex; gap: 32px; margin-bottom: 36px; }
+  .pc-stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px; font-weight: 700; color: var(--accent); display: block;
+  }
+  .design-card .pc-stat-num { color: var(--accent2); }
+  .pc-stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+  .pc-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 28px; border-radius: 6px;
+    border: 1px solid rgba(79,195,247,0.4); color: var(--accent);
+    transition: all .3s;
+  }
+  .design-card .pc-btn { border-color: rgba(124,77,255,0.4); color: var(--accent2); }
+  .portfolio-card:hover .pc-btn {
+    background: rgba(79,195,247,0.1); border-color: var(--accent); gap: 16px;
+  }
+  .design-card:hover .pc-btn {
+    background: rgba(124,77,255,0.1); border-color: var(--accent2);
+  }
+  .pc-glow {
+    position: absolute; width: 300px; height: 300px; border-radius: 50%;
+    bottom: -100px; right: -80px;
+    background: radial-gradient(circle, rgba(79,195,247,0.07), transparent);
+    pointer-events: none; opacity: 0; transition: opacity .4s;
+  }
+  .design-card .pc-glow { background: radial-gradient(circle, rgba(124,77,255,0.08), transparent); }
+  .portfolio-card:hover .pc-glow { opacity: 1; }
+
+  @media (max-width: 768px) {
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .portfolio-card { padding: 32px 28px; }
+    #portfolio { padding: 80px 0; }
+  }
+
   /* FOOTER */
   footer {
     padding: 40px;
@@ -736,6 +832,7 @@
     <li><a href="#skills" onclick="closeMenu()">Навыки</a></li>
     <li><a href="#projects" onclick="closeMenu()">Проекты</a></li>
     <li><a href="#achievements" onclick="closeMenu()">Достижения</a></li>
+    <li><a href="#portfolio" onclick="closeMenu()">Портфолио</a></li>
     <li><a href="#contact" onclick="closeMenu()">Контакт</a></li>
   </ul>
   <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Меню">
@@ -795,15 +892,26 @@
     <div class="about-grid">
       <div class="about-photo-wrap reveal">
         <div class="about-photo">
-        <img src="photo.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:8px;">
+          <img src="photo.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:center top;border-radius:8px;">
         </div>
         <div class="photo-glow"></div>
       </div>
       <div class="about-text reveal">
         <h3>Фурузонфар Зикриёев</h3>
-        <p>Родился в <strong>Таджикистане</strong>, вырос как специалист в <strong>России</strong>. Окончил российскую школу, прошёл курс по Frontend-разработке, поступил в <strong>КНИТУ (Казань)</strong> на специальность «Информационные системы и технологии».</p>
-        <p>Я называю себя Mercury — быстрый, точный, всегда в движении. Совмещаю разработку с дизайном: <strong>5 лет в графическом дизайне</strong> (Photoshop, CorelDraw) дают мне понимание визуала, которого не хватает многим разработчикам.</p>
-        <p>Помимо IT — <strong>кандидат в мастера спорта по большому теннису</strong> и активный участник культурной жизни университета. Более 50 наград разного уровня.</p>
+        <p>
+          Выпускник <strong>КНИТУ (Казань)</strong>, специальность
+          «Информационные системы и технологии», 2026.
+          Таджикистан → Россия → Узбекистан.
+        </p>
+        <p>
+          Frontend-разработка + <strong>5 лет в графическом дизайне</strong>
+          (CorelDraw, Photoshop) — редкое сочетание технического
+          и визуального мышления в одном специалисте.
+        </p>
+        <p>
+          <strong>Кандидат в мастера спорта</strong> по большому теннису.
+          50+ наград в культурных и общественных мероприятиях.
+        </p>
         <div class="about-tags">
           <span class="tag">Таджикистан 🇹🇯</span>
           <span class="tag">Россия 🇷🇺</span>
@@ -914,7 +1022,13 @@
         <span class="project-badge">★ Дипломная работа · 2026</span>
         <div class="project-num">ПРОЕКТ 01</div>
         <h3>DotaAI — Интеллектуальная система аналитики</h3>
-        <p class="project-desc">Полноценная AI-система персональной аналитики игроков Dota 2 — дипломный проект по специальности «Информационные системы и технологии». Система анализирует игровые данные через открытый API, строит профили игроков и выдаёт персонализированные рекомендации на основе алгоритмов машинного обучения.</p>
+        <p class="project-desc">
+          AI-система персональной аналитики игроков Dota 2.
+          Анализирует <strong>30+ игровых показателей</strong>, строит сравнение
+          с любым игроком по <strong>15 поведенческим паттернам</strong> с графиками
+          и схемами. Полный разбор игровых решений на основе ИИ —
+          от микро-механик до стратегических ошибок.
+        </p>
         <div class="project-tech">
           <span class="tech-tag">Python</span>
           <span class="tech-tag">AI / ML</span>
@@ -928,7 +1042,12 @@
         <div class="project-glow"></div>
         <div class="project-num">ПРОЕКТ 02</div>
         <h3>Frontend Кейсы & Практика</h3>
-        <p class="project-desc">Серия практических заданий во время обучения: лендинги, интерактивные компоненты, анимации на чистом JS, адаптивная вёрстка. Каждый кейс — отдельная задача: от навигации до сложных CSS/JS-эффектов.</p>
+        <p class="project-desc">
+          Серия независимых задач: лендинги, интерактивные компоненты,
+          анимации на чистом JS, адаптивная вёрстка.
+          Каждый кейс — отдельная техническая задача:
+          от построения навигации до сложных CSS/JS-эффектов без библиотек.
+        </p>
         <div class="project-tech">
           <span class="tech-tag">HTML</span>
           <span class="tech-tag">CSS</span>
@@ -941,7 +1060,12 @@
         <div class="project-glow"></div>
         <div class="project-num">ПРОЕКТ 03</div>
         <h3>DB Web Interface</h3>
-        <p class="project-desc">Веб-приложение для работы с базой данных: подключение БД, CRUD-операции, SQL-запросы через интерфейс. Университетский проект по курсу «Базы данных».</p>
+        <p class="project-desc">
+          Проектирование реляционных БД: схемы, связи, нормализация.
+          SQL-запросы от простых выборок до многоуровневых JOIN-ов.
+          Веб-интерфейс с полным CRUD — подключение БД к фронтенду
+          без сторонних ORM.
+        </p>
         <div class="project-tech">
           <span class="tech-tag">SQL</span>
           <span class="tech-tag">БД</span>
@@ -954,12 +1078,17 @@
         <div class="project-glow"></div>
         <div class="project-num">ПРОЕКТ 04</div>
         <h3>Коммерческие сайты — BO/BO Studio</h3>
-        <p class="project-desc">Реальные сайты для клиентов веб-студии BO/BO (Таджикистан). Разработка в соло: от идеи до реализации. Использовал Tilda и собственную вёрстку.</p>
+        <p class="project-desc">
+          За 3 месяца: <strong>15+ демо-сайтов</strong> для клиентского портфолио студии
+          и <strong>7 сданных проектов</strong> — преимущественно интернет-магазины,
+          которыми клиенты пользуются по сей день.
+          Полный цикл в соло: концепция, дизайн, вёрстка, сдача.
+        </p>
         <div class="project-tech">
           <span class="tech-tag">Tilda</span>
           <span class="tech-tag">HTML/CSS</span>
           <span class="tech-tag">Дизайн</span>
-          <span class="tech-tag">Клиенты</span>
+          <span class="tech-tag">E-commerce</span>
         </div>
       </div>
 
@@ -1051,6 +1180,74 @@
           <p class="exp-desc">Профессиональный курс по Frontend-разработке. Изучение HTML, CSS, JavaScript, работа с анимациями. Получен сертификат об окончании.</p>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">// 004.5 — Портфолио</span>
+      <h2 class="section-title">Больше работ</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="portfolio-grid">
+
+      <!-- ДОСТИЖЕНИЯ -->
+      <a href="achievements.html" class="portfolio-card reveal">
+        <div class="pc-bg-num">01</div>
+        <div class="pc-glow"></div>
+        <span class="pc-tag blue">// Галерея достижений</span>
+        <h2 class="pc-title">Достижения<br>& Награды</h2>
+        <p class="pc-desc">
+          Хакатон РФ, КМС по теннису, университетские и международные награды —
+          всё в одном месте с документами и фотографиями.
+        </p>
+        <div class="pc-stats">
+          <div>
+            <span class="pc-stat-num">50+</span>
+            <div class="pc-stat-label">Наград</div>
+          </div>
+          <div>
+            <span class="pc-stat-num">3</span>
+            <div class="pc-stat-label">Категории</div>
+          </div>
+          <div>
+            <span class="pc-stat-num">КМС</span>
+            <div class="pc-stat-label">Теннис</div>
+          </div>
+        </div>
+        <span class="pc-btn">Смотреть галерею →</span>
+      </a>
+
+      <!-- ДИЗАЙН -->
+      <a href="design.html" class="portfolio-card design-card reveal">
+        <div class="pc-bg-num">02</div>
+        <div class="pc-glow"></div>
+        <span class="pc-tag purple">// Дизайн-портфолио</span>
+        <h2 class="pc-title">Дизайн<br>& Ребрендинги</h2>
+        <p class="pc-desc">
+          4 организации, 7+ ребрендингов, логотипы, фирменные стили,
+          грамоты и SMM — пять лет графического дизайна.
+        </p>
+        <div class="pc-stats">
+          <div>
+            <span class="pc-stat-num">4</span>
+            <div class="pc-stat-label">Организации</div>
+          </div>
+          <div>
+            <span class="pc-stat-num">7+</span>
+            <div class="pc-stat-label">Ребрендингов</div>
+          </div>
+          <div>
+            <span class="pc-stat-num">5</span>
+            <div class="pc-stat-label">Лет опыта</div>
+          </div>
+        </div>
+        <span class="pc-btn">Смотреть работы →</span>
+      </a>
+
     </div>
   </div>
 </section>
