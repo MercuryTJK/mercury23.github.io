@@ -832,7 +832,7 @@
     <li><a href="#skills" onclick="closeMenu()">Навыки</a></li>
     <li><a href="#projects" onclick="closeMenu()">Проекты</a></li>
     <li><a href="#achievements" onclick="closeMenu()">Достижения</a></li>
-    <li><a href="#portfolio" onclick="closeMenu()">Портфолио</a></li>
+    
     <li><a href="#contact" onclick="closeMenu()">Контакт</a></li>
   </ul>
   <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Меню">
@@ -1192,62 +1192,22 @@
       <h2 class="section-title">Больше работ</h2>
       <div class="section-line"></div>
     </div>
-    <div class="portfolio-grid">
-
-      <!-- ДОСТИЖЕНИЯ -->
-      <a href="achievements.html" class="portfolio-card reveal">
-        <div class="pc-bg-num">01</div>
-        <div class="pc-glow"></div>
-        <span class="pc-tag blue">// Галерея достижений</span>
-        <h2 class="pc-title">Достижения<br>& Награды</h2>
-        <p class="pc-desc">
-          Хакатон РФ, КМС по теннису, университетские и международные награды —
-          всё в одном месте с документами и фотографиями.
-        </p>
-        <div class="pc-stats">
-          <div>
-            <span class="pc-stat-num">50+</span>
-            <div class="pc-stat-label">Наград</div>
+    <div style="max-width:700px;margin:0 auto;">
+      <a href="achievements.html" style="display:block;text-decoration:none;" class="reveal">
+        <div style="position:relative;border-radius:16px;padding:48px 44px;border:1px solid rgba(79,195,247,0.15);background:var(--card);overflow:hidden;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),border-color .3s,box-shadow .4s;cursor:none;"
+          onmouseenter="this.style.transform='translateY(-8px)';this.style.borderColor='rgba(79,195,247,0.5)';this.style.boxShadow='0 24px 60px rgba(79,195,247,0.15)'"
+          onmouseleave="this.style.transform='';this.style.borderColor='rgba(79,195,247,0.15)';this.style.boxShadow=''">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:18px;">// Галерея достижений</span>
+          <h2 style="font-family:'Orbitron',monospace;font-size:clamp(22px,3vw,32px);color:var(--text);font-weight:700;line-height:1.2;margin-bottom:16px;">Достижения & Награды</h2>
+          <p style="font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:32px;">Хакатон РФ, КМС по теннису, университетские и международные награды — всё в одном месте с документами и фотографиями.</p>
+          <div style="display:flex;gap:32px;margin-bottom:36px;">
+            <div><span style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:var(--accent);display:block;">50+</span><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px;">Наград</div></div>
+            <div><span style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:var(--accent);display:block;">3</span><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px;">Категории</div></div>
+            <div><span style="font-family:'Orbitron',monospace;font-size:28px;font-weight:700;color:var(--accent);display:block;">КМС</span><div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:2px;">Теннис</div></div>
           </div>
-          <div>
-            <span class="pc-stat-num">3</span>
-            <div class="pc-stat-label">Категории</div>
-          </div>
-          <div>
-            <span class="pc-stat-num">КМС</span>
-            <div class="pc-stat-label">Теннис</div>
-          </div>
+          <span style="display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:12px 28px;border-radius:6px;border:1px solid rgba(79,195,247,0.4);color:var(--accent);">Смотреть галерею →</span>
         </div>
-        <span class="pc-btn">Смотреть галерею →</span>
       </a>
-
-      <!-- ДИЗАЙН -->
-      <a href="design.html" class="portfolio-card design-card reveal">
-        <div class="pc-bg-num">02</div>
-        <div class="pc-glow"></div>
-        <span class="pc-tag purple">// Дизайн-портфолио</span>
-        <h2 class="pc-title">Дизайн<br>& Ребрендинги</h2>
-        <p class="pc-desc">
-          4 организации, 7+ ребрендингов, логотипы, фирменные стили,
-          грамоты и SMM — пять лет графического дизайна.
-        </p>
-        <div class="pc-stats">
-          <div>
-            <span class="pc-stat-num">4</span>
-            <div class="pc-stat-label">Организации</div>
-          </div>
-          <div>
-            <span class="pc-stat-num">7+</span>
-            <div class="pc-stat-label">Ребрендингов</div>
-          </div>
-          <div>
-            <span class="pc-stat-num">5</span>
-            <div class="pc-stat-label">Лет опыта</div>
-          </div>
-        </div>
-        <span class="pc-btn">Смотреть работы →</span>
-      </a>
-
     </div>
   </div>
 </section>
